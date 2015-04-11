@@ -10,6 +10,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.WebView;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -34,21 +35,34 @@ public class MainActivity extends ActionBarActivity {
     private Context context;
     private String regid;
     private GoogleCloudMessaging gcm;
-    private TextView mDisplay;
+    private WebView webView;
+    //private TextView mDisplay;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mDisplay = (TextView) findViewById(R.id.display);
+        //mDisplay = (TextView) findViewById(R.id.display);
+        webView = (WebView) findViewById(R.id.webView);
         context = getApplicationContext();
+        webView.addJavascriptInterface(new JsWrapper(), "wrapper");
+    }
+
+    public class JsWrapper{
+        public void reg(){
+            register();
+        }
+    }
+
+    private final void register(){
         if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
             if (regid.isEmpty()) {
                 registerInBackground();
             }else{
-                mDisplay.append("Already Registered!");
+                //mDisplay.append("Already Registered!");
+                Log.i(TAG, "Already Registered");
             }
             sendRegistrationIdToBackend();
         } else {
@@ -95,7 +109,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             protected void onPostExecute(String msg) {
-                mDisplay.append(msg + "\n");
+                Log.i(TAG, msg);
             }
         }.execute(null, null, null);
     }
@@ -163,7 +177,7 @@ public class MainActivity extends ActionBarActivity {
 
             @Override
             protected void onPostExecute(String msg) {
-                mDisplay.append(msg + "\n");
+                Log.i(TAG, msg);
             }
         }.execute(null, null, null);
     }
