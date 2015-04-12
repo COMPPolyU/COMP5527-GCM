@@ -1,6 +1,7 @@
 <resources>
-    <string name="app_name">GCM Study</string>
+    <string name="app_name">M. Smart Health</string>
 
-    <string name="hello_world"></string>
+    <string name="hello_world">Smart!</string>
     <string name="action_settings">Settings</string>
+
 </resources>

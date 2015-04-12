@@ -4,14 +4,17 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.JavascriptInterface;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -45,26 +48,68 @@ public class MainActivity extends ActionBarActivity {
         //mDisplay = (TextView) findViewById(R.id.display);
         webView = (WebView) findViewById(R.id.webView);
         context = getApplicationContext();
-        webView.addJavascriptInterface(new JsWrapper(), "wrapper");
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(new JsWrapper(this), "Android");
+        webView.loadUrl("file:///android_asset/www/test.html");
+        //webView.loadUrl("http://www.simple-trade.net/");
     }
 
-    public class JsWrapper{
-        public void reg(){
-            register();
+    public void webViewInteraction(final String javascript){
+        if (webView != null){
+            webView.post(new Runnable() {
+                @Override
+                public void run() {
+                    webView.loadUrl("javascript:callFromActivity('" + javascript + "')");
+                }
+            });
         }
     }
 
-    private final void register(){
+    public class JsWrapper{
+        Context mContext;
+        public JsWrapper(Context c){
+            this.mContext = c;
+        }
+
+        @JavascriptInterface
+        public void register(String token){
+            registerGCM(token);
+        }
+
+        @JavascriptInterface
+        public boolean hasNetwork(){
+            boolean status=false;
+            try{
+                ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+                NetworkInfo netInfo = cm.getNetworkInfo(0);
+                if (netInfo != null && netInfo.getState()==NetworkInfo.State.CONNECTED) {
+                    status= true;
+                }else {
+                    netInfo = cm.getNetworkInfo(1);
+                    if(netInfo!=null && netInfo.getState()==NetworkInfo.State.CONNECTED)
+                        status= true;
+                }
+            }catch(Exception e){
+                e.printStackTrace();
+                return false;
+            }
+            return status;
+        }
+
+
+    }
+
+    private final void registerGCM(String token){
         if (checkPlayServices()) {
             gcm = GoogleCloudMessaging.getInstance(this);
             regid = getRegistrationId(context);
             if (regid.isEmpty()) {
-                registerInBackground();
+                registerInBackground(token);
             }else{
-                //mDisplay.append("Already Registered!");
                 Log.i(TAG, "Already Registered");
+                sendRegistrationIdToBackend(token);
             }
-            sendRegistrationIdToBackend();
         } else {
             Log.i(TAG, "No valid Google Play Services APK found.");
         }
@@ -86,12 +131,10 @@ public class MainActivity extends ActionBarActivity {
         return registrationId;
     }
 
-
-
-    private void registerInBackground() {
+    private void registerInBackground(final String token) {
         new AsyncTask<Void, Void, String>() {
             @Override
-            protected String doInBackground(Void... params) {
+            protected String doInBackground(Void... param) {
                 String msg = "";
                 try {
                     if (gcm == null) {
@@ -101,6 +144,7 @@ public class MainActivity extends ActionBarActivity {
                     Log.i(TAG, "Registration ID=" + regid);
                     msg = "Device registered, registration ID=" + regid;
                     storeRegistrationId(context, regid);
+                    sendRegistrationIdToBackend(token);
                 } catch (IOException ex) {
                     msg = "Error :" + ex.getMessage();
                 }
@@ -113,7 +157,6 @@ public class MainActivity extends ActionBarActivity {
             }
         }.execute(null, null, null);
     }
-
 
     private boolean checkPlayServices() {
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -154,19 +197,20 @@ public class MainActivity extends ActionBarActivity {
                 Context.MODE_PRIVATE);
     }
 
-    private void sendRegistrationIdToBackend() {
+    private void sendRegistrationIdToBackend(final String token) {
         new AsyncTask<Void, Void, String>() {
             @Override
-            protected String doInBackground(Void... params) {
+            protected String doInBackground(Void... param) {
                 try{
                     JSONObject holder = new JSONObject();
-                    holder.put("token","9914d425e4874e88943d56b4c4eec606");
+                    holder.put("token",token);
                     holder.put("deviceId", regid);
-
+                    Log.i(TAG, holder.toString());
                     byte[] postData = holder.toString().getBytes(Charset.forName("UTF-8"));
 
                     HttpConnectionHelper helper = new HttpConnectionHelper();
-                    String result = helper.post("http://smarthealth-comp5527.rhcloud.com//demo/rest/registerGCM", postData);
+                    String result = helper.post("http://smarthealth-comp5527.rhcloud.com/demo/rest/registerGCM", postData);
+                    webViewInteraction("Reg OK!");
                     return result;
                 } catch (Exception e){
                     Log.i(TAG, e.getMessage());
@@ -190,16 +234,16 @@ public class MainActivity extends ActionBarActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        //getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
+//        int id = item.getItemId();
+//        if (id == R.id.action_settings) {
+//            return true;
+//        }
         return super.onOptionsItemSelected(item);
     }
 }
