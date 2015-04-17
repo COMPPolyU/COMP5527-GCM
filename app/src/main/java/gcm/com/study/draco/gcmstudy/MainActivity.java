@@ -50,9 +50,10 @@ public class MainActivity extends ActionBarActivity {
         context = getApplicationContext();
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
         webView.addJavascriptInterface(new JsWrapper(this), "Android");
-        webView.loadUrl("file:///android_asset/www/test.html");
-        //webView.loadUrl("http://www.simple-trade.net/");
+        //webView.loadUrl("file:///android_asset/www/test.html");
+        webView.loadUrl("http://www.simple-trade.net/");
     }
 
     public void webViewInteraction(final String javascript){
