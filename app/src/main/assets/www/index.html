@@ -1,0 +1,118 @@
+<html>
+<head>
+<title>M.Smart Health System</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="cache-control" content="no-cache" />
+<link rel="stylesheet" href="css/jquery-ui.css" />
+<link rel="stylesheet" href="css/jquery.mobile-1.4.5.css" />
+<link rel="stylesheet" href="css/css.css" />
+<script type="text/javascript" src="js/jquery-2.1.1.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+<script type="text/javascript" src="js/jquery.mobile-1.4.5.js"></script>
+<script type="text/javascript" src="js/index.js"></script>
+</head>
+<body>
+	<div data-role="page" id="PageLoading" data-dialog="true">
+		<div role="main" class="ui-content">
+			<h3>Loading</h3>
+		</div>
+	</div>
+	<div data-role="page" id="PageLogin">
+		<div data-role="header" data-position="fixed">
+			<h1>Login - M.Smart Health System</h1>
+		</div>
+		<div role="main" class="ui-content">
+			<label for="UserID">E-mail / User ID</label>
+			<input type="text" id="UserID" data-clear-btn="true" value="abc@gmail.com" />
+			<label for="Password">Password</label>
+			<input type="password" id="Password" value="abc" />
+			<input type="button" value="Login" onclick="User.Login()" />
+		</div>
+	</div>
+	<div data-role="page" id="PageRecord">
+		<div data-role="header" data-position="fixed">
+			<a href="#PageSetting" class="ui-btn-left ui-corner-all" data-icon="gear">Setting</a>
+			<h1>M.Smart Health System</h1>
+			<a href="#PageSubmit" class="ui-btn-right ui-corner-all" data-icon="edit">Edit</a>
+		</div>
+		<div role="main" class="ui-content tab">
+			<ul>
+				<li><a href="#TabPressureHigh">Systolic</a></li>
+				<li><a href="#TabPressureLow">Diastolic </a></li>
+				<li><a href="#TabGlucose">Glycemia</a></li>
+			</ul>
+			<div id="TabPressureHigh">
+				<table></table>
+			<button onclick="ShowChart('PressureHigh')">Show Chart</button>
+			</div>
+			<div id="TabPressureLow">
+				<table></table>
+			<button onclick="ShowChart('PressureLow')">Show Chart</button>
+			</div>
+			<div id="TabGlucose">
+				<table></table>
+			<button onclick="ShowChart('Glucose')">Show Chart</button>
+			</div>
+		</div>
+		<div data-role="footer" data-position="fixed">
+			<h1 class="SpanDateTime"></h1>
+		</div>
+	</div>
+	<div data-role="page" id="PageSubmit" data-dialog="true">
+		<div data-role="header" data-position="fixed">
+			<h1>Submit new record</h1>
+		</div>
+		<div role="main" class="ui-content">
+			<label for="Date">Date</label>
+			<input type="text" name="Date" id="Date" />
+			<label for="Time">Time Slots</label>
+			<select name="Time" id="Time">
+				<option value="AFTER_BED">AFTER BED</option>
+				<option value="BEFORE_BREAKFAST">BEFORE BREAKFAST</option>
+				<option value="AFTER_BREAKFAST">AFTER BREAKFAST</option>
+				<option value="BEFORE_LUNCH">BEFORE LUNCH</option>
+				<option value="AFTER_LUNCH">AFTER LUNCH</option>
+				<option value="BEFORE_DINNER">BEFORE DINNER</option>
+				<option value="AFTER_DINNER">AFTER DINNER</option>
+				<option value="BEFORE_BED">BEFORE BED</option>
+			</select>
+			<label for="BPH">Systolic Pressure</label>
+			<input type="text" name="BPH" id="BPH" />
+			<label for="BPL">Diastolic Pressure</label>
+			<input type="text" name="BPL" id="BPL" />
+			<label for="BG">Glycemia</label>
+			<input type="text" name="BG" id="BG" />
+			<button onclick="Measurement.Submit();">Submit</button>
+		</div>
+	</div>
+	<div data-role="page" id="PageSetting" data-dialog="true">
+		<div data-role="header" data-position="fixed">
+			<h1>Setting</h1>
+		</div>
+		<div role="main" class="ui-content">
+			<h3>Time Slots</h3>
+			<div data-role="fieldcontain">
+				<fieldset data-role="controlgroup">
+					<label for="AFTER_BED">AFTER BED</label><input type="checkbox" name="TimeSlot" id="AFTER_BED" value="AFTER_BED" />
+					<label for="BEFORE_BREAKFAST">BEFORE BREAKFAST</label><input type="checkbox" name="TimeSlot" id="BEFORE_BREAKFAST" value="BEFORE_BREAKFAST" />
+					<label for="AFTER_BREAKFAST">AFTER BREAKFAST</label><input type="checkbox" name="TimeSlot" id="AFTER_BREAKFAST" value="AFTER_BREAKFAST" />
+					<label for="BEFORE_LUNCH">BEFORE LUNCH</label><input type="checkbox" name="TimeSlot" id="BEFORE_LUNCH" value="BEFORE_LUNCH" />
+					<label for="AFTER_LUNCH">AFTER LUNCH</label><input type="checkbox" name="TimeSlot" id="AFTER_LUNCH" value="AFTER_LUNCH" />
+					<label for="BEFORE_DINNER">BEFORE DINNER</label><input type="checkbox" name="TimeSlot" id="BEFORE_DINNER" value="BEFORE_DINNER" />
+					<label for="AFTER_DINNER">AFTER DINNER</label><input type="checkbox" name="TimeSlot" id="AFTER_DINNER" value="AFTER_DINNER" />
+					<label for="BEFORE_BED">BEFORE BED</label><input type="checkbox" name="TimeSlot" id="BEFORE_BED" value="BEFORE_BED" />
+				</fieldset>
+			</div>
+			<button class="ui-btn" onclick="User.Logout();">Logout</button>
+		</div>
+	</div>
+	<div data-role="page" id="PageChart" data-dialog="true">
+		<div data-role="header" data-position="fixed">
+			<h1>Chart</h1>
+		</div>
+		<div role="main" class="ui-content">
+			<iframe></iframe>
+		</div>
+	</div>
+</body>
+</html>
