@@ -6,7 +6,8 @@ body {
 }
 
 table {
-	font-size: 0.6em;
+    width:100%;
+
 	border-spacing: 0px;
     border-collapse: separate;
 }
@@ -17,12 +18,21 @@ caption {
 }
 
 th {
-	
+	height:30px;
+	font-size: 0.7em;
 }
 
 td {
+    height:30px;
 	text-align: center;
 	vertical-align: middle;
+}
+.colDate{
+	font-size: 0.7em;
+}
+.colValue{
+	font-size: 1em;
+	font-weight: bold;
 }
 
 h3 {

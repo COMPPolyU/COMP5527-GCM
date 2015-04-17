@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -52,8 +53,8 @@ public class MainActivity extends ActionBarActivity {
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webView.addJavascriptInterface(new JsWrapper(this), "Android");
-        //webView.loadUrl("file:///android_asset/www/test.html");
-        webView.loadUrl("http://www.simple-trade.net/");
+        webView.loadUrl("file:///android_asset/www/index.html");
+        //webView.loadUrl("http://www.simple-trade.net/");
     }
 
     public void webViewInteraction(final String javascript){
@@ -71,6 +72,11 @@ public class MainActivity extends ActionBarActivity {
         Context mContext;
         public JsWrapper(Context c){
             this.mContext = c;
+        }
+
+        @JavascriptInterface
+        public void toast(String message){
+            Toast.makeText(mContext, message, Toast.LENGTH_SHORT).show();
         }
 
         @JavascriptInterface

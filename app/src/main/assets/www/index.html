@@ -10,6 +10,7 @@
 <script type="text/javascript" src="js/jquery-ui.js"></script>
 <script type="text/javascript" src="js/jquery.mobile-1.4.5.js"></script>
 <script type="text/javascript" src="js/index.js"></script>
+
 </head>
 <body>
 	<div data-role="page" id="PageLoading" data-dialog="true">
@@ -26,7 +27,7 @@
 			<input type="text" id="UserID" data-clear-btn="true" value="abc@gmail.com" />
 			<label for="Password">Password</label>
 			<input type="password" id="Password" value="abc" />
-			<input type="button" value="Login" onclick="User.Login()" />
+			<input type="button" id="btnLogin" value="Login" onclick="User.Login()" />
 		</div>
 	</div>
 	<div data-role="page" id="PageRecord">
@@ -90,7 +91,7 @@
 			<h1>Setting</h1>
 		</div>
 		<div role="main" class="ui-content">
-			<h3>Time Slots</h3>
+			<h3 style="display:none">Time Slots</h3>
 			<div data-role="fieldcontain">
 				<fieldset data-role="controlgroup">
 					<label for="AFTER_BED">AFTER BED</label><input type="checkbox" name="TimeSlot" id="AFTER_BED" value="AFTER_BED" />
