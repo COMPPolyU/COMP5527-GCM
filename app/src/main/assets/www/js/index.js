@@ -1,7 +1,7 @@
 var API = 'https://smarthealth-comp5527.rhcloud.com/demo';
 
 var TimeSlot;
-var Measurements;
+var Measurements = new Array();
 var Tab = "TabPressureHigh";
 
 var Today = new Date();
@@ -65,9 +65,11 @@ $(document).ready(function() {
 		TimeSlot = LocalStorage.Load("TimeSlot");
 	}
 
-	$.each(TimeSlot, function(Key, Value) {
-		$("[name=TimeSlot][value=" + Key + "]").prop("checked", Value);
-	});
+	if(TimeSlot.length) {
+		$.each(TimeSlot, function(Key, Value) {
+			$("[name=TimeSlot][value=" + Key + "]").prop("checked", Value);
+		});
+	}
 
 	$("[name=TimeSlot]").click(function(e) {
 		TimeSlot[this.value] = $(this).is(':checked');
@@ -101,6 +103,17 @@ function ShowChart(Type) {
 	$.mobile.changePage("#PageChart");
 }
 
+var InputDate = {
+	B: function() {
+		Today = new Date(Today.getTime() - (24 * 60 * 60 * 1000));
+		$("#Date").val(pad(Today.getDate(), 2) + '-' + pad((Today.getMonth() + 1), 2) + '-' + Today.getFullYear());
+	},
+	F: function() {
+		Today = new Date(Today.getTime() + (24 * 60 * 60 * 1000));
+		$("#Date").val(pad(Today.getDate(), 2) + '-' + pad((Today.getMonth() + 1), 2) + '-' + Today.getFullYear());
+	}
+};
+
 var User = {
 	Login: function() {
 		$.mobile.changePage("#PageLoading");
@@ -110,8 +123,8 @@ var User = {
 			type: "POST",
 			dataType: "json",
 			data: JSON.stringify({
-				"userId": "abc@gmail.com",
-				"password": "abc"
+				"userId": $("#UserID").val(),
+				"password": $("#Password").val()
 			}),
 			contentType: "application/json; charset=utf-8",
 			success: function(JData) {
@@ -193,6 +206,7 @@ var User = {
 				});
 
 				LocalStorage.Save("Measurements", Measurements);
+				LoadTable();
 			},
 			error: function() {
 
@@ -224,6 +238,7 @@ var Measurement = {
 			});
 			LocalStorage.Save("Measurements", Measurements);
 			User.LoadMeasurement(WeekDate.getDate() + '-' + (WeekDate.getMonth() + 1) + '-' + WeekDate.getFullYear(), Today.getDate() + '-' + (Today.getMonth() + 1) + '-' + Today.getFullYear());
+			$.mobile.changePage("#PageRecord");
 		}
 	}
 };
@@ -258,17 +273,19 @@ function LoadTable() {
 
 	$(".tab table").html(HTML);
 
-	$.each(Measurements, function() {
-		this.date;
-		this.time;
-		this.BPH;
-		this.BPL;
-		this.BPH;
+	if(Measurements.length) {
+		$.each(Measurements, function() {
+			this.date;
+			this.time;
+			this.BPH;
+			this.BPL;
+			this.BPH;
 
-		$("#TabPressureHigh ." + this.date + "." + this.time).html(this.BPH);
-		$("#TabPressureLow ." + this.date + "." + this.time).html(this.BPL);
-		$("#TabGlucose ." + this.date + "." + this.time).html(this.BG);
-	});
+			$("#TabPressureHigh ." + this.date + "." + this.time).html(this.BPH);
+			$("#TabPressureLow ." + this.date + "." + this.time).html(this.BPL);
+			$("#TabGlucose ." + this.date + "." + this.time).html(this.BG);
+		});
+	}
 }
 
 function getRandomInt(min, max) {
