@@ -7,6 +7,26 @@ var Tab = "TabPressureHigh";
 var Today = new Date();
 var WeekDate = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
 
+var AndroidAPI = {
+
+    register : function(token){
+        if (Android !== undefined){
+            Android.register(token);
+        }
+    },
+    alert : function(msg){
+        if (Android !== undefined){
+            Android.toast(msg);
+        }
+    },
+    hasNetwork : function(){
+        if (Android !== undefined){
+            return Android.hasNetwork();
+        }
+    }
+
+};
+
 var LocalStorage = {
 	Save: function(Key, Obj) {
 		// Save JS Object in LocalStorage
@@ -130,7 +150,13 @@ var User = {
 			success: function(JData) {
 				localStorage.setItem("token", JData.token);
 				User.LoadMeasurement(WeekDate.getDate() + '-' + (WeekDate.getMonth() + 1) + '-' + WeekDate.getFullYear(), Today.getDate() + '-' + (Today.getMonth() + 1) + '-' + Today.getFullYear());
+				AndroidAPI.alert("Login Success");
 				$.mobile.changePage("#PageRecord");
+				AndroidAPI.register(window.localStorage.getItem("token"));
+			},
+			error : function(err){
+			    $.mobile.changePage("#PageLogin");
+			    AndroidAPI.alert("Login Fail");
 			}
 		});
 	},

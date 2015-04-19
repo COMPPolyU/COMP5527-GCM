@@ -81,7 +81,11 @@ public class MainActivity extends ActionBarActivity {
 
         @JavascriptInterface
         public void register(String token){
-            registerGCM(token);
+            try {
+                registerGCM(token);
+            } catch (Exception e){
+                Log.i(TAG, e.getMessage());
+            }
         }
 
         @JavascriptInterface
@@ -214,7 +218,6 @@ public class MainActivity extends ActionBarActivity {
                     holder.put("deviceId", regid);
                     Log.i(TAG, holder.toString());
                     byte[] postData = holder.toString().getBytes(Charset.forName("UTF-8"));
-
                     HttpConnectionHelper helper = new HttpConnectionHelper();
                     String result = helper.post("http://smarthealth-comp5527.rhcloud.com/demo/rest/registerGCM", postData);
                     webViewInteraction("Reg OK!");
