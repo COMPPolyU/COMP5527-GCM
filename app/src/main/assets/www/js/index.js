@@ -6,20 +6,6 @@ var Tab = "TabPressureHigh";
 
 var Today = new Date();
 var WeekDate = new Date(new Date().getTime() - (7 * 24 * 60 * 60 * 1000));
-// Draco - API to communicate with android
-var AndroidAPI = {
-
-    register : function(token){
-        //Android.register(token);
-    },
-    alert : function(msg){
-        //Android.toast(msg);
-    },
-    hasNetwork : function(){
-        //return Android.hasNetwork();
-    }
-
-};
 
 var LocalStorage = {
 	Save: function(Key, Obj) {
@@ -42,7 +28,6 @@ var LocalStorage = {
 };
 
 $(document).ready(function() {
-
 	$("#Date").val(pad(Today.getDate(), 2) + '-' + pad((Today.getMonth() + 1), 2) + '-' + Today.getFullYear());
 	$("#BPH").val(getRandomInt(100, 150));
 	$("#BPL").val(getRandomInt(60, 120));
@@ -96,7 +81,6 @@ $(document).ready(function() {
 	} else {
 		User.LoadMeasurement(WeekDate.getDate() + '-' + (WeekDate.getMonth() + 1) + '-' + WeekDate.getFullYear(), Today.getDate() + '-' + (Today.getMonth() + 1) + '-' + Today.getFullYear());
 		$.mobile.changePage("#PageRecord");
-		AndroidAPI.register(window.localStorage.getItem("token"));
 	}
 
 	LoadTable();
@@ -135,8 +119,6 @@ var User = {
 				localStorage.setItem("token", JData.token);
 				User.LoadMeasurement(WeekDate.getDate() + '-' + (WeekDate.getMonth() + 1) + '-' + WeekDate.getFullYear(), Today.getDate() + '-' + (Today.getMonth() + 1) + '-' + Today.getFullYear());
 				$.mobile.changePage("#PageRecord");
-				// Draco - register the device id
-				AndroidAPI.register(token);
 			}
 		});
 	},
@@ -222,20 +204,28 @@ var User = {
 
 var Measurement = {
 	Submit: function() {
-		Measurements.push({
-			"date": $("#Date").val(),
-			"time": $("#Time").val(),
-			"BPL": $("#BPL").val(),
-			"BPH": $("#BPH").val(),
-			"BG": $("#BG").val(),
-			"Submitted": false
-		});
-		LocalStorage.Save("Measurements", Measurements);
-		User.LoadMeasurement(WeekDate.getDate() + '-' + (WeekDate.getMonth() + 1) + '-' + WeekDate.getFullYear(), Today.getDate() + '-' + (Today.getMonth() + 1) + '-' + Today.getFullYear());
-		// Draco - Return to record page and refresh the table
-		$.mobile.changePage("#PageRecord");
-		LoadTable();
-		AndroidAPI.alert("Save Success!");
+		var BPH = $("#BPH").val().length ? $("#BPH").val() : 0;
+		var BPL = $("#BPL").val().length ? $("#BPL").val() : 0;
+		var BG = $("#BG").val().length ? $("#BPL").val() : 0;
+
+		if(isNaN(parseFloat(BPH))) {
+			alert('Please input a valid value for the Systolic Pressure');
+		} else if(isNaN(parseFloat(BPL))) {
+			alert('Please input a valid value for the Diastolic Pressure');
+		} else if(isNaN(parseFloat(BG))) {
+			alert('Please input a valid value for the Glycemia');
+		} else {
+			Measurements.push({
+				"date": $("#Date").val(),
+				"time": $("#Time").val(),
+				"BPH": BPH,
+				"BPL": BPL,
+				"BG": BG,
+				"Submitted": false
+			});
+			LocalStorage.Save("Measurements", Measurements);
+			User.LoadMeasurement(WeekDate.getDate() + '-' + (WeekDate.getMonth() + 1) + '-' + WeekDate.getFullYear(), Today.getDate() + '-' + (Today.getMonth() + 1) + '-' + Today.getFullYear());
+		}
 	}
 };
 
@@ -254,28 +244,28 @@ function LoadTable() {
 		DummyDate = new Date(new Date().getTime() - (i * 24 * 60 * 60 * 1000));
 
 		HTML += "<tr>";
-		HTML += '<td class="colDate">' + pad(DummyDate.getDate(), 2) + '-' + pad((DummyDate.getMonth() + 1), 2) + '-' + DummyDate.getFullYear() + '</td>';
+		HTML += '<td>' + pad(DummyDate.getDate(), 2) + '-' + pad((DummyDate.getMonth() + 1), 2) + '-' + DummyDate.getFullYear() + '</td>';
 
 		$.each(TimeSlot, function(Key, Value) {
 			if(Value) {
-				HTML += '<td class="colVal">';
+				HTML += '<td>';
 				HTML += '<span class="' + pad(DummyDate.getDate(), 2) + '-' + pad((DummyDate.getMonth() + 1), 2) + '-' + DummyDate.getFullYear() + ' ' + Key + '"> --- </span>';
 				HTML += '</td>';
 			}
 		});
-		
+
 		HTML += "</tr>";
 	}
 
 	$(".tab table").html(HTML);
-	
+
 	$.each(Measurements, function() {
 		this.date;
 		this.time;
 		this.BPH;
 		this.BPL;
 		this.BPH;
-		
+
 		$("#TabPressureHigh ." + this.date + "." + this.time).html(this.BPH);
 		$("#TabPressureLow ." + this.date + "." + this.time).html(this.BPL);
 		$("#TabGlucose ." + this.date + "." + this.time).html(this.BG);
