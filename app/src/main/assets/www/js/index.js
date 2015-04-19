@@ -72,7 +72,6 @@ $(document).ready(function() {
 	$("[name=TimeSlot]").click(function(e) {
 		TimeSlot[this.value] = $(this).is(':checked');
 		LocalStorage.Save("TimeSlot", TimeSlot);
-
 		LoadTable();
 	});
 
